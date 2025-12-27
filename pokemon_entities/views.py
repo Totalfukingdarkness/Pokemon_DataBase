@@ -35,7 +35,8 @@ def get_image_url(request, pokemon):
 def show_all_pokemons(request):
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     time_now = timezone.localtime()
-    pokemons = PokemonEntity.objects.filter(appeared_at__lte=time_now, disappeared_at__gte=time_now)
+    pokemons = PokemonEntity.objects.filter(appeared_at__lte=time_now,
+                                            disappeared_at__gte=time_now)
     for pokemon in pokemons:
         add_pokemon(
             folium_map, pokemon.lat,
@@ -62,18 +63,21 @@ def show_all_pokemons(request):
 def show_pokemon(request, pokemon_id):
     time_now = timezone.localtime()
     pokemon = Pokemon.objects.get(id=pokemon_id)
-    if pokemon.id == int(pokemon_id):
-        requested_pokemon = pokemon
-    else:
+    if not pokemon.id == int(pokemon_id):
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
     pokemon_data = {
-        "title_ru": requested_pokemon.title,
-        "img_url": get_image_url(request, requested_pokemon),
+        'title_ru': pokemon.title,
+        'title_en': pokemon.title_eng,
+        'title_jp': pokemon.title_jp,
+        "img_url": get_image_url(request, pokemon),
+        'description': pokemon.description
     }
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    pokemon_entitys = PokemonEntity.objects.filter(pokemon=pokemon, appeared_at__lte=time_now, disappeared_at__gte=time_now)
+    pokemon_entitys = PokemonEntity.objects.filter(pokemon=pokemon,
+                                                   appeared_at__lte=time_now,
+                                                   disappeared_at__gte=time_now)
     for pokemon_entity in pokemon_entitys:
         add_pokemon(
             folium_map, pokemon_entity.lat,
