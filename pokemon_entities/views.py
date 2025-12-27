@@ -66,12 +66,21 @@ def show_pokemon(request, pokemon_id):
     if not pokemon.id == int(pokemon_id):
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
+    previous_evolution = {}
+    if pokemon.previous_evolution:
+        previous_evolution = {
+            'title_ru': pokemon.previous_evolution.title,
+            'pokemon_id': pokemon.previous_evolution.id,
+            'img_url': get_image_url(request, pokemon.previous_evolution),
+            }
+
     pokemon_data = {
         'title_ru': pokemon.title,
         'title_en': pokemon.title_eng,
         'title_jp': pokemon.title_jp,
         "img_url": get_image_url(request, pokemon),
-        'description': pokemon.description
+        'description': pokemon.description,
+        'previous_evolution': previous_evolution
     }
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
